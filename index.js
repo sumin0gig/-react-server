@@ -67,6 +67,7 @@ app.delete('/ledgerenter/:id',(req,res)=>{
 	})
 })
 
+
 app.get('/ledgerenter10',(req,res)=>{
 	conn.query(`SELECT * FROM ledger order by id desc limit 10`
 	,(error,result,fields)=>{
@@ -78,20 +79,37 @@ app.get('/ledgerenterDate/:ol_date/:l_date',(req,res)=>{
 	const {ol_date,l_date}=req.params;
 	conn.query(`SELECT * FROM ledger where l_date between ${ol_date} and ${l_date} order by l_date`,
 	(err,result,fields)=>{
-		console.log(fields);
 		res.send(result)
 	})
 })
 
-// ------------- fundsstate ------------- 계정과목이 늘어남에 따라 상태가 늘어나야 하므로 삭제 후 JS로 돌림
-app.get('/fundsstate/:l_left',(req,res)=>{
-	const {l_left}=req.params;
-	conn.query(`SELECT sum(l_price) as sum_price FROM ledger where l_left='${l_left}'`
-	,(error,result,fields)=>{
-		res.send(result);
-		console.log(result);
+
+// ------------- addaccounttitleUpdate -------------
+
+app.patch('/addaccounttitleUpdate/:desc',(req,res)=>{
+	const {desc}=req.params;
+	const {text}=req.body;
+	console.log(desc, text);
+	conn.query(`update ledger set l_left='${text}' where l_left='${desc}'`,(error,result,fields)=>{})
+	conn.query(`update ledger set l_right='${text}' where l_right='${desc}'`,(error,result,fields)=>{})
+})
+
+app.delete('/addaccounttitleUpdate/:desc',(req,res)=>{
+	const {desc}=req.params;
+	console.log(desc);
+	conn.query(`delete from ledger where l_left='${desc}' || l_right='${desc}'`,(error,result,fields)=>{
 	})
 })
+
+// ------------- fundsstate ------------- 계정과목이 늘어남에 따라 상태가 늘어나야 하므로 삭제 후 JS로 돌림
+// app.get('/fundsstate/:l_left',(req,res)=>{
+// 	const {l_left}=req.params;
+// 	conn.query(`SELECT sum(l_price) as sum_price FROM ledger where l_left='${l_left}'`
+// 	,(error,result,fields)=>{
+// 		res.send(result);
+// 		console.log(result);
+// 	})
+// })
 
 
 
